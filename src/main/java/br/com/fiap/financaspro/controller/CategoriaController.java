@@ -51,6 +51,7 @@ public class CategoriaController {
                 return ResponseEntity.ok(categoria);
         }
 
+        
         // TODO Refatorar com stream
 
         return ResponseEntity.notFound().build();
