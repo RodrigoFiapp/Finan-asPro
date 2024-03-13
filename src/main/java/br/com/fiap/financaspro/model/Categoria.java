@@ -1,5 +1,7 @@
 package br.com.fiap.financaspro.model;
 
+import java.util.Optional;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,5 +27,9 @@ public class Categoria extends Object{
     private Long id;
     private String nome;
     private String icone;
+    public Optional<Categoria> map(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'map'");
+    }
 
 }
