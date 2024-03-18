@@ -74,11 +74,6 @@ public class CategoriaController {
             return ResponseEntity.noContent().build();
     }
 
-    private void verificarSeExisteCategoria(Long id) {
-        repository
-            .findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Não existe categoria do id informado. Consulte lista em /categoria"));
-    }
     @PutMapping("{id}")
     public ResponseEntity<Categoria> update(@PathVariable Long id, @RequestBody Categoria categoria) {
         log.info("atualizando categoria com id {} para {}", id, categoria);
@@ -88,6 +83,15 @@ public class CategoriaController {
             categoria.setId(id);
             repository.save(categoria); //serve como um UPDATE caso já exista no banco
             return ResponseEntity.ok(categoria);
+    }
+
+    private void verificarSeExisteCategoria(Long id) {
+        repository
+            .findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, 
+                                "Não existe categoria com o id informado. Consulte lista em /categoria"
+                            ));
     }
 
     // private Optional<Categoria> getCategoriaById(Long id) {
