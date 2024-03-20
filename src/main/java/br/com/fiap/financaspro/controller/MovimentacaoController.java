@@ -1,7 +1,7 @@
 package br.com.fiap.financaspro.controller;
 
 import java.util.List;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,11 +22,12 @@ public class MovimentacaoController {
     
     @GetMapping
     public List<Movimentacao> index(){
+
         return repository.findAll();
     }
 
     @PostMapping
-    @ResponseStatus(CREATED)
+    @ResponseStatus(HttpStatus.CREATED)
     public Movimentacao create(@RequestBody Movimentacao movimentacao){
         return repository.save(movimentacao);
     }
