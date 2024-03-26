@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.openai.OpenAiChatClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.com.fiap.financaspro.model.Categoria;
 import br.com.fiap.financaspro.repository.CategoriaRepository;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -39,6 +41,9 @@ public class CategoriaController {
     @Autowired //como se fosse um extends
     CategoriaRepository repository;
 
+    @Autowired
+    OpenAiChatClient gpt;
+
     @GetMapping
     public List<Categoria> index() {
         return repository.findAll(); //retorna o repositório no DB
@@ -47,52 +52,53 @@ public class CategoriaController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public Categoria create(@RequestBody Categoria categoria){ //binding
+    public Categoria create(@RequestBody @Valid Categoria categoria) { // binding
         log.info("cadastrando categoria {} ", categoria);
-        repository.save(categoria); //para salvar as alterações 
-        return categoria;
+        var icone = gpt.call("Sugira um icone do Material para uma categoria chamada" + categoria.getNome() + "Retorne apenas o nome do icone");
+        categoria.setIcone(icone);
+        return repository.save(categoria);
     }
     
-    @GetMapping("{id}")
-    public ResponseEntity<Categoria> show(@PathVariable Long id){
-        log.info("buscando categoria por id {}", id);
+    // @GetMapping("{id}")
+    // public ResponseEntity<Categoria> show(@PathVariable Long id){
+    //     log.info("buscando categoria por id {}", id);
 
-        return repository
-            .findById(id)
-            .map( ResponseEntity::ok) //map responsável pela conversão
-            .orElse(ResponseEntity.notFound().build());
-         }
+    //     return repository
+    //         .findById(id)
+    //         .map( ResponseEntity::ok) //map responsável pela conversão
+    //         .orElse(ResponseEntity.notFound().build());
+    //      }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Object> destroy(@PathVariable Long id){
-        log.info("apagando categoria");
+    // @DeleteMapping("{id}")
+    // public ResponseEntity<Object> destroy(@PathVariable Long id){
+    //     log.info("apagando categoria");
         
-        verificarSeExisteCategoria(id);
+    //     verificarSeExisteCategoria(id);
 
 
-            repository.deleteById(id);
-            return ResponseEntity.noContent().build();
-    }
+    //         repository.deleteById(id);
+    //         return ResponseEntity.noContent().build();
+    // }
 
-    @PutMapping("{id}")
-    public ResponseEntity<Categoria> update(@PathVariable Long id, @RequestBody Categoria categoria) {
-        log.info("atualizando categoria com id {} para {}", id, categoria);
+    // @PutMapping("{id}")
+    // public ResponseEntity<Categoria> update(@PathVariable Long id, @RequestBody Categoria categoria) {
+    //     log.info("atualizando categoria com id {} para {}", id, categoria);
         
-        verificarSeExisteCategoria(id);
+    //     verificarSeExisteCategoria(id);
 
-            categoria.setId(id);
-            repository.save(categoria); //serve como um UPDATE caso já exista no banco
-            return ResponseEntity.ok(categoria);
-    }
+    //         categoria.setId(id);
+    //         repository.save(categoria); //serve como um UPDATE caso já exista no banco
+    //         return ResponseEntity.ok(categoria);
+    // }
 
-    private void verificarSeExisteCategoria(Long id) {
-        repository
-            .findById(id)
-            .orElseThrow(() -> new ResponseStatusException(
-                                HttpStatus.NOT_FOUND, 
-                                "Não existe categoria com o id informado. Consulte lista em /categoria"
-                            ));
-    }
+    // private void verificarSeExisteCategoria(Long id) {
+    //     repository
+    //         .findById(id)
+    //         .orElseThrow(() -> new ResponseStatusException(
+    //                             HttpStatus.NOT_FOUND, 
+    //                             "Não existe categoria com o id informado. Consulte lista em /categoria"
+    //                         ));
+    // }
 
     // private Optional<Categoria> getCategoriaById(Long id) {
     //     var categoriaEncontrada = repository  //colocando o repository em uma variável
