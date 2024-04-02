@@ -1,7 +1,5 @@
 package br.com.fiap.financaspro.model;
 
-import java.util.Optional;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
